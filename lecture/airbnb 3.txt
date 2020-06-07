@@ -1,0 +1,50 @@
+[#3.0 Replacing Default User]
+1. 우린 많은 APP을 추가했는데 admin pannel에서는 USER만 보인다.
+왜냐? config에 APP을 추가하지 않았기 때문 장고는 이게 있는지 몰라
+근데 왜 USER만 보이냐?
+default로 지정해 줬기 때문이다.
+django admin에서 USER를 살펴보면 이것저것들이 있다.
+하지만 기능이 충분치 않기에 우린 이를 확장해야함
+그렇다고 현재 DB에 있는 USER를 직접적으로 수정할 수 없음
+일단 user를 만들자!
+	-> users/models.py
+	-> from django.db import models은 모델을 사용할 수 있는 라이브러리 개념
+	-> 모델(=table) 생성시에 상속시켜야함 class Model(상속)
+	-> 우리는 우리가 만든 User class에 현재 django에서 제공하는 User를 상속시킬 거임
+	-> from django.contrib.auth.models import AbstractUser
+	-> class User(AbstratUser): pass
+
+2. 우리가 만든 USER를 AUTH로 설정하기
+	-> settings.py
+	-> DJANGO_APPS => 이미 설치되어 있는 apps
+	-> PROJECT_APPS => 우리가 코딩한 apps
+	-> INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
+	-> 저장하기 전에 dbsql 삭제 (=> 이미 db에 user가 있기 때문에 충돌남)
+	-> AUTH_USER_MODEL = "users.User" 추가 (=> 이제 Django에서 제공하는 user가 아닌 내가 만든 User를 사용할 거니까
+	-> Dependency error no migration
+
+[#3.1 Introduction to the User Model]
+1. 문제해결
+	-> users/migrations 폴더를 펼쳐보기 하고
+	-> python manage.py makemigrations
+	-> 0001_initial.py 생성
+	-> 우리가 수정한 users/models.py에 맞춰서 모델(=table)을 생성했음
+	-> pass지만 AbstractUser를 상속 받았기 때문에 이러한 것들이 인자로 추가되었음
+	-> project db 삭제했기 때문에 superuser 다시 생성
+
+2. 로그인했는데 User가 사라짐
+default User가 아닌 우리가 만든 USER를 사용한다고 명시했기 때문에 더이상 패널에서 보이지 않음
+이를 해결하기 위해선 admin에 model을 연결시켜 줘야함
+	-> admin.py에 작성
+		@admin.register(models.User)
+		class CustomUserAdmin(admin.ModelAdmin):
+		
+		    pass
+	-> models에 만든 것을 Form으로 만들어줌
+
+[#3.3 Finishing User Model]
+1. 모델 설정
+	-> CharField는 choice를 둘 수 있다.
+	-> 튜플1안에 Value, Key 튜플2를 생성하고 choice = 튜플1 해주면 됨
+
+

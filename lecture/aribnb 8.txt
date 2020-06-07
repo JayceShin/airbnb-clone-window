@@ -1,0 +1,34 @@
+MEDIA_ROOT는 장고에게 어디에다가 우리가 업로드할 파일들을 써야 할지 말해주는 곳
+config settings.py에 작성
+
+절대경로를 적어줘야함
+os.path.join -> 경로 합
+
+git에 upload 파일들이 저장되지 않도록 gitignore에 uploads/ 추가
+
+ImageField의 upload_to는 uploads 폴더의 어느곳에 업로드 할 지 적어줄 수 있다.
+
+MEDIA_URL은 MEDIA_ROOT에서 온 MEDIA를 다뤄 /를 갖고 끝나야 한다 ex midea/
+
+settings를 참조하고 싶을 때
+from django.conf import settings
+
+static이라는 장고 헬퍼가 있다.
+이는 기본적으로 static 파일들을 제공하는걸 돕는다.
+from django.conf.urls.static import static
+
+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+이거의 의미는 앞으로 MEDIA_URL은 MEDIA_ROOT로 갈 것이다.
+
+InlineAdmin
+다른 admin에 있는 것을 현재 admin에 추가해주는 기능
+
+1. 이렇게 만들고
+class PhotoInline(admin.TabularInline):
+
+    model = models.Photo
+
+2. 이렇게 RoomAdmin에 추가
+inlines = (PhotoInline,)
+
+그러면 (rooms.py)에 있는 photo 모델 (캡션, 이미지파일 등)이 rooms를 생성할 때 이용될 수 있다.

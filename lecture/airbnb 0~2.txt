@@ -1,0 +1,124 @@
+[단축키]
+[Ctrl + P] 파일 찾기
+[Ctrl + Shift + P] 커맨드 명령 프롬프트
+[Ctrl + ,] Setting
+
+[Extention]
+Material Icon Theme -> Material-icon-theme: Active Icon Pack
+Night Owl -> workbench color Theme
+
+[mac에서..]
+remove: rm -rf [folder or file]
+
+[#1.2 Creating our Env and Installing Django]
+1. 폴더를 pipenv python3 환경으로 만들기
+pipenv --three
+
+2. pipenv 환경으로 들어가기
+pipenv shell
+이 환경 안에서 나는 설치하고 이것저것 할거야
+
+	1. Django 설치하기
+	pipenv install Django==2.2.5
+	pipfile에 Django가 설치된 것을 볼 수 있다.
+
+	2. Django 설치가 되었는지 확인하기
+	django-admin
+	문구 출력
+
+[#1.3 Creating the Github Repository]
+1. Git repository 생성
+git init
+git remote add https://github.com/JayceShin/airbnb-clone-window.git
+git add .
+- new file create
+	- .gitignore
+	- google -> gitignore python
+	- mac일 경우 '.DS_Store' 추가
+git commit -m "text"
+git push origin master
+
+[#1.4 Testing the Bubble]
+1. django-admin이 어느 환경에서 동작하는가
+pipenv shell 안의 터미널에서만 작동함
+
+[#2.0 Creating a Django Project]
+1. django config 만들기
+django-admin startproject config
+	-> config 폴더 생성 
+	-> Aconfig로 변경 (같은 이름이면 폴더를 밖으로 꺼낼 수 없기 때문)
+	-> config(folder) & manage.py 밖으로 꺼내기
+
+2. 추가 환경 설정
+	-> extention(click!)
+	-> python 설치
+	-> .py file open하면 알림창이 떠야함
+	-> 아래창에 python version click 시 버전 선택 할 수 있는 창이 뜬다
+	-> pipenv 버전 선택
+
+[#2.1 Setting up VSCode and Python Like a PRO]
+1. 추가 환경 설정
+	-> Linter: 에러가 날 곳을 알려준다
+	-> .py 오픈시 linter 선택하라고 메세지 뜸 (or Ctrl + Shift + P and Python:Select Linter)
+	-> flake8 선택 
+	-> settings.js에 linting과 같은 것들이 설정 되어 있음
+	-> 다시 .py 오픈 후 install 메세지 클릭 
+	-> Blakc: Formmater 오류날 곳 수정해서 저장
+	-> python 환경에서 pipenv install black --dev --pre
+	-> settings.json에 적용되어있지 않다면 "python.formatting.provider": "black" 추가
+	-> Ctrl + , 후 format on save 클릭
+
+2. 적용해보기
+config 폴더의 setting.py는 4, U 로 되어있을 것임 => 에러가 4개 있다
+	-> AUTH_PASSWORD_VALIDATORS => Line longer 에러
+	-> Open settings.json
+	-> Add "python.linting.flake8Args":["--max-line-lenght=91"] 
+	-> settings.py 저장해보면 '들이 "로 변경됨을 확인
+
+[#2.2 Falling in love with Django part One]
+	-> __init__.py : python에 필요한 파일 django에 필요하진 않음, 만약 새로운 폴더를 프로젝트에 사용하고 싶다면 이 init py가 있어야 한다.
+	-> settings.py : django를 구성하는 모든 세팅 예를들어 우리의 시간을 TIME_ZONE = "Asia/Seoul"로 바꿈
+
+[#2.3 Falling in love with Django part Two]
+	-> manage.py에는 django를 실행시키기 위한 많은 코드들이 있다.
+	-> pipshell 환경 안에서 python manage.py runserver
+	-> http://127.0.0.1:8000/ -> 장고프로젝트 실행!
+	-> http://127.0.0.1:8000/admin -> no such table: auth_user 테이블이 없다.
+	-> 서버 닫고 [Ctrl + C]
+	-> python manage.py makemigrations
+	-> python manage.py migrate
+	-> python manage.py runserver
+	-> 로그인이 안된다 Why? user를 만들지 않았으니까
+	-> python manage.py createsuperuser
+	-> 로그인 확인
+
+[#2.6 Creating the Apps!]
+app 생성시 복수 이름 설정하기!
+	-> django-admin startapp rooms
+	-> django-admin startapp users
+	-> django-admin startapp conversations (=>django에는 이미 message가 settings에 포함되어 있기에 다른 이름)
+	-> django-admin startapp lists
+	-> django-admin startapp reservations
+
+admin pannel은 web master를 위한 것
+DB와 연결해주는 창 같은 개념
+superuser가 가능한 이유는 settings.py => INSTALLED_APPS => "django.contrib.auth", 가 있기 때문
+
+[#2.7 Explaining the Apps]
+각 APP안에 있는 모듈들은 절대 변경하면 안됨, framework의 경우 우리는 framework의 룰을 따라야함
+	-> admin.py: 패널에서 해당 app이 어떻게 보여질지 변경하고 싶다 (=> 나중에 확인 가능함)
+	-> view.py: web page, html을 보여줄때
+	-> config 폴더의 urls.py를 보자
+	-> urlpatterns = [
+    		path('admin/', admin.site.urls),
+	    ]
+	-> path에 속해있는 url로 pannel에 접속
+	-> models.py: 하나의 database table 같은 개념
+	-> 만약 모델에 변경이 일어나면 migration file은 migrations에 저장된다
+	-> migrate 명령시 migrations 폴더에 있는 것을 활용함
+	-> apps.py: 그냥 config file이라고만 알아두자
+	-> urls.py를 APP 안에 생성
+	-> framework를 따라야하는데 생성은 자유로워
+	-> 만약 config에 url에 모든 url을 넣는다면 너무 많이짐 ex) user/create, rooms/create, rooms/id ...
+	-> Divide & Conqure
+	-> APP에 url을 포함시키는 형식
